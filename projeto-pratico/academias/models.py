@@ -7,16 +7,6 @@ class Academia(models.Model):
     Representa uma Academia e contém as suas informações básicas.
     """
 
-    # corrigir lógica atual para referenciar o usuário correto
-    aluno = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="academias_como_aluno",
-        verbose_name="Responsável",
-        blank=True,
-        null=True,
-        limit_choices_to={"user_type": "ADMIN"},
-    )
     nome_fantasia = models.CharField(max_length=100, verbose_name="Nome Fantasia")
     cnpj = models.CharField(max_length=18, unique=True, verbose_name="CNPJ")
     endereco = models.CharField(max_length=255, verbose_name="Endereço")
