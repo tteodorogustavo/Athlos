@@ -78,9 +78,3 @@ Recursos úteis no repositório
 - [`academias.models`](projeto-pratico/academias/models.py) ([projeto-pratico/academias/models.py](projeto-pratico/academias/models.py))
 - [`core.models`](projeto-pratico/core/models.py) ([projeto-pratico/core/models.py](projeto-pratico/core/models.py))
 - [`treinos.models`](projeto-pratico/treinos/models.py) ([projeto-pratico/treinos/models.py](projeto-pratico/treinos/models.py))
-
-Contato
-- Autor do repositório (informações no Git / commits).
-
-Licença
-- Adicionar arquivo LICENSE na raiz com a licença desejada.
