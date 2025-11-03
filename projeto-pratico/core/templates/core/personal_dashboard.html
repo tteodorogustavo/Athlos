@@ -13,7 +13,7 @@
                 <p class="text-white-50">Olá, {{ user.get_full_name }}! Gerencie seus alunos e treinos.</p>
             </div>
         </div>
-        
+
         <!-- Cards de Estatísticas -->
         <div class="row g-4 mb-4">
             <div class="col-md-6">
@@ -27,7 +27,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-md-6">
                 <div class="stat-card">
                     <div class="d-flex justify-content-between align-items-center">
@@ -40,7 +40,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Informações do Personal -->
         <div class="row mb-4">
             <div class="col-12">
@@ -52,19 +52,20 @@
                             <p><strong><i class="bi bi-card-text"></i> CREF:</strong> {{ personal.cref }}</p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong><i class="bi bi-star"></i> Especialidade:</strong> {{ personal.especialidade }}</p>
+                            <p><strong><i class="bi bi-star"></i> Especialidade:</strong> {{ personal.especialidade }}
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Lista de Alunos -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="dashboard-card">
                     <h4 class="mb-4"><i class="bi bi-people-fill"></i> Meus Alunos</h4>
-                    
+
                     {% if alunos %}
                     <div class="table-responsive">
                         <table class="table table-hover">
@@ -97,13 +98,13 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Lista de Treinos -->
         <div class="row">
             <div class="col-12">
                 <div class="dashboard-card">
                     <h4 class="mb-4"><i class="bi bi-clipboard-check-fill"></i> Meus Treinos</h4>
-                    
+
                     {% if treinos %}
                     <div class="row g-3">
                         {% for treino in treinos %}

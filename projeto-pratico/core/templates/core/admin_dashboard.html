@@ -13,58 +13,7 @@
                 <p class="text-white-50">Bem-vindo, {{ user.get_full_name }}! Gerencie todo o sistema aqui.</p>
             </div>
         </div>
-        
-        <!-- Cards de Estatísticas -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-uppercase mb-1 opacity-75">Academias</h6>
-                            <h2 class="mb-0 fw-bold">{{ total_academias }}</h2>
-                        </div>
-                        <i class="bi bi-building stat-icon"></i>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-uppercase mb-1 opacity-75">Alunos</h6>
-                            <h2 class="mb-0 fw-bold">{{ total_alunos }}</h2>
-                        </div>
-                        <i class="bi bi-people stat-icon"></i>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-uppercase mb-1 opacity-75">Personal Trainers</h6>
-                            <h2 class="mb-0 fw-bold">{{ total_personals }}</h2>
-                        </div>
-                        <i class="bi bi-person-badge stat-icon"></i>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-uppercase mb-1 opacity-75">Treinos</h6>
-                            <h2 class="mb-0 fw-bold">{{ total_treinos }}</h2>
-                        </div>
-                        <i class="bi bi-clipboard-check stat-icon"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
+
         <!-- Ações Rápidas -->
         <div class="row g-4">
             <div class="col-md-4">
@@ -79,7 +28,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-md-4">
                 <div class="dashboard-card h-100">
                     <div class="text-center">
@@ -92,7 +41,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-md-4">
                 <div class="dashboard-card h-100">
                     <div class="text-center">
@@ -106,7 +55,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Admin Django -->
         <div class="row mt-4">
             <div class="col-12">
@@ -114,7 +63,8 @@
                     <div class="text-center">
                         <i class="bi bi-gear-fill text-warning" style="font-size: 2rem;"></i>
                         <h5 class="mt-2 mb-3">Painel Administrativo Completo</h5>
-                        <p class="text-muted mb-3">Acesse o painel administrativo do Django para controle total do sistema.</p>
+                        <p class="text-muted mb-3">Acesse o painel administrativo do Django para controle total do
+                            sistema.</p>
                         <a href="/admin/" class="btn btn-warning btn-custom" target="_blank">
                             <i class="bi bi-box-arrow-up-right"></i> Acessar Admin Django
                         </a>
