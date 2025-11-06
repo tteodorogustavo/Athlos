@@ -1,0 +1,176 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{% if treino %}Editar{% else %}Novo{% endif %} Treino{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card card-body">
+        <h4 class="mb-4">
+            <i class="bi bi-clipboard-data"></i>
+            {% if treino %}Editar Treino{% else %}Novo Treino{% endif %}
+        </h4>
+
+        <form method="post" id="treino-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <!-- Dados do Treino -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Aluno *</label>
+                    {{ form.aluno }}
+                    {% if form.aluno.errors %}
+                    <div class="text-danger small">{{ form.aluno.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Nome do Treino *</label>
+                    {{ form.nome_treino }}
+                    {% if form.nome_treino.errors %}
+                    <div class="text-danger small">{{ form.nome_treino.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-check mb-4">
+                {{ form.ativo }}
+                <label class="form-check-label">Ativo</label>
+            </div>
+
+            <hr>
+
+            <!-- Item Treinos (Exercícios) -->
+            <div class="mb-4">
+                <h5 class="mb-3">
+                    <i class="bi bi-list-check"></i> Item Treinos
+                </h5>
+
+                {{ formset.management_form }}
+
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="item-treino-table">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width: 40%;">Exercício</th>
+                                <th style="width: 15%;">Séries</th>
+                                <th style="width: 25%;">Repetições (Ex: 10-12 ou 'Até a Falha')</th>
+                                <th style="width: 15%;">Carga (KG)</th>
+                                <th style="width: 5%; text-align: center;">
+                                    <i class="bi bi-trash"></i>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="formset-body">
+                            {% for item_form in formset %}
+                            <tr class="formset-row">
+                                <td>
+                                    {{ item_form.id }}
+                                    {{ item_form.exercicio }}
+                                    {% if item_form.exercicio.errors %}
+                                    <div class="text-danger small">{{ item_form.exercicio.errors }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ item_form.series }}
+                                    {% if item_form.series.errors %}
+                                    <div class="text-danger small">{{ item_form.series.errors }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ item_form.repeticoes }}
+                                    {% if item_form.repeticoes.errors %}
+                                    <div class="text-danger small">{{ item_form.repeticoes.errors }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ item_form.carga_kg }}
+                                    {% if item_form.carga_kg.errors %}
+                                    <div class="text-danger small">{{ item_form.carga_kg.errors }}</div>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {{ item_form.DELETE }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <button type="button" class="btn btn-success btn-sm" id="add-item">
+                    <i class="bi bi-plus-circle"></i> Adicionar Exercício
+                </button>
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" onclick="history.back()" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> Salvar Treino
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const formsetBody = document.getElementById('formset-body');
+        const addButton = document.getElementById('add-item');
+        const totalForms = document.querySelector('#id_itens-TOTAL_FORMS');
+
+        // Função para adicionar nova linha
+        addButton.addEventListener('click', function () {
+            const formIdx = parseInt(totalForms.value);
+            const emptyRow = formsetBody.querySelector('.formset-row:last-child').cloneNode(true);
+
+            // Atualizar os índices dos campos
+            emptyRow.innerHTML = emptyRow.innerHTML.replace(/itens-\d+-/g, `itens-${formIdx}-`);
+
+            // Limpar os valores
+            emptyRow.querySelectorAll('input, select').forEach(field => {
+                if (field.type === 'checkbox') {
+                    field.checked = false;
+                } else {
+                    field.value = '';
+                }
+            });
+
+            // Adicionar a nova linha
+            formsetBody.appendChild(emptyRow);
+
+            // Incrementar o total de forms
+            totalForms.value = formIdx + 1;
+        });
+
+        // Estilizar checkboxes de DELETE
+        document.querySelectorAll('input[type="checkbox"][name$="-DELETE"]').forEach(checkbox => {
+            checkbox.classList.add('form-check-input');
+        });
+    });
+</script>
+
+<style>
+    .table-dark {
+        background-color: #37678e;
+        color: white;
+    }
+
+    .formset-row select,
+    .formset-row input {
+        width: 100%;
+    }
+
+    .formset-row td {
+        vertical-align: middle;
+    }
+</style>
+{% endblock %}

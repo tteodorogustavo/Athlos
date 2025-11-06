@@ -56,8 +56,8 @@
         }
 
         .stat-card {
-            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
-            color: white;
+            background: #F3F3F3;
+            color: #2c3e50;
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 20px;
@@ -85,6 +85,36 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                    {% if user.user_type == 'PERSONAL' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'academia_list' %}">
+                            <i class="bi bi-building"></i> Academias
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'aluno_list' %}">
+                            <i class="bi bi-people"></i> Alunos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'treino_list' %}">
+                            <i class="bi bi-clipboard-check"></i> Treinos
+                        </a>
+                    </li>
+                    {% elif user.user_type in 'ADMIN,ADMIN_SISTEMA' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'academia_list' %}">
+                            <i class="bi bi-building"></i> Academias
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'treino_list' %}">
+                            <i class="bi bi-clipboard-check"></i> Treinos
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% endif %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                             data-bs-toggle="dropdown">

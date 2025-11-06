@@ -1,0 +1,87 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Treinos - Athlos{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Treinos</h3>
+        <a href="{% url 'treino_create' %}" class="btn btn-primary">Novo Treino</a>
+    </div>
+
+    <!-- Filtro de busca -->
+    <div class="card card-body mb-3">
+        <form method="get" class="row g-3">
+            <div class="col-md-10">
+                <input type="text" name="busca" class="form-control" placeholder="Buscar por nome do treino ou aluno..."
+                    value="{{ request.GET.busca }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Buscar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {% if treinos %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Nome do Treino</th>
+                    <th>Aluno</th>
+                    <th>Personal</th>
+                    <th>Data de Criação</th>
+                    <th>Status</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in treinos %}
+                <tr>
+                    <td>
+                        <a href="{% url 'treino_detail' t.pk %}" class="text-decoration-none">
+                            <strong>{{ t.nome_treino }}</strong>
+                        </a>
+                    </td>
+                    <td>{{ t.aluno.user.get_full_name|default:t.aluno.user.email }}</td>
+                    <td>
+                        {% if t.personal_criador %}
+                        {{ t.personal_criador.user.get_full_name|default:t.personal_criador.user.email }}
+                        {% else %}
+                        <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ t.data_criacao|date:"d/m/Y" }}</td>
+                    <td>
+                        {% if t.ativo %}
+                        <span class="badge bg-success">Ativo</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Inativo</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <a href="{% url 'treino_detail' t.pk %}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-eye"></i> Ver
+                        </a>
+                        <a href="{% url 'treino_edit' t.pk %}" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        {% if request.GET.busca %}
+        Nenhum treino encontrado para "{{ request.GET.busca }}".
+        {% else %}
+        Nenhum treino encontrado.
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

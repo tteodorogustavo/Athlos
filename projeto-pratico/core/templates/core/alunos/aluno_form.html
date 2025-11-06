@@ -1,0 +1,111 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{% if aluno %}Editar{% else %}Novo{% endif %} Aluno - Athlos{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card card-body">
+                <h4 class="mb-4">
+                    <i class="bi bi-person-fill"></i>
+                    {% if aluno %}Editar Aluno{% else %}Novo Aluno{% endif %}
+                </h4>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    <h5 class="mb-3">Dados de Acesso</h5>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email *</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                        <div class="text-danger small">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Nome *</label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                <div class="text-danger small">{{ form.first_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Sobrenome *</label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                <div class="text-danger small">{{ form.last_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.password.label }}</label>
+                        {{ form.password }}
+                        <div class="form-text">{{ form.password.help_text }}</div>
+                        {% if form.password.errors %}
+                        <div class="text-danger small">{{ form.password.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h5 class="mb-3">Dados do Aluno</h5>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Data de Nascimento</label>
+                                {{ form.data_nascimento }}
+                                {% if form.data_nascimento.errors %}
+                                <div class="text-danger small">{{ form.data_nascimento.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Objetivo</label>
+                                {{ form.objetivo }}
+                                {% if form.objetivo.errors %}
+                                <div class="text-danger small">{{ form.objetivo.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Academia</label>
+                        {{ form.academia }}
+                        {% if form.academia.errors %}
+                        <div class="text-danger small">{{ form.academia.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" onclick="history.back()" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Salvar
+                        </button>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

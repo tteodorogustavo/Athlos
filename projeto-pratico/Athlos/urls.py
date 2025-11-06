@@ -28,4 +28,20 @@ urlpatterns = [
     path("dashboard/admin/", views.admin_dashboard, name="admin_dashboard"),
     path("dashboard/personal/", views.personal_dashboard, name="personal_dashboard"),
     path("dashboard/aluno/", views.aluno_dashboard, name="aluno_dashboard"),
+    # Academias (admin)
+    path("academias/", views.academia_list, name="academia_list"),
+    path("academias/novo/", views.academia_create, name="academia_create"),
+    path("academias/<int:pk>/", views.academia_detail, name="academia_detail"),
+    path("academias/<int:pk>/editar/", views.academia_edit, name="academia_edit"),
+    # Treinos
+    path("treinos/", views.treino_list, name="treino_list"),
+    path("treinos/novo/", views.treino_create, name="treino_create"),
+    path("treinos/<int:pk>/", views.treino_detail, name="treino_detail"),
+    path("treinos/<int:pk>/editar/", views.treino_edit, name="treino_edit"),
+    # Alunos
+    path("alunos/", views.aluno_list, name="aluno_list"),
+    path("alunos/novo/", views.aluno_create, name="aluno_create"),
+    path("alunos/<int:pk>/", views.aluno_detail, name="aluno_detail"),
+    path("alunos/<int:pk>/editar/", views.aluno_edit, name="aluno_edit"),
+    path("alunos/<int:pk>/excluir/", views.aluno_delete, name="aluno_delete"),
 ]

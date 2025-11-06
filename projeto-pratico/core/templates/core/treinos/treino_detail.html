@@ -1,0 +1,40 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ treino.nome_treino }} - Treino{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>{{ treino.nome_treino }}</h3>
+        <div>
+            <a href="{% url 'treino_edit' treino.pk %}" class="btn btn-warning">Editar</a>
+            <button onclick="history.back()" class="btn btn-outline-light">Voltar</button>
+        </div>
+    </div>
+
+    <div class="card card-body">
+        <p><strong>Aluno:</strong> {{ treino.aluno.user.get_full_name|default:treino.aluno.user.email }}</p>
+        <p><strong>Personal:</strong> {% if treino.personal_criador %}{{
+            treino.personal_criador.user.get_full_name|default:treino.personal_criador.user.email }}{% else %}—{% endif
+            %}</p>
+        <p><strong>Data de criação:</strong> {{ treino.data_criacao|date:"d/m/Y H:i" }}</p>
+        <p><strong>Ativo:</strong> {{ treino.ativo }}</p>
+
+        <hr>
+        <h5>Exercícios</h5>
+        {% if treino.itens.exists %}
+        <ul class="list-group list-group-flush">
+            {% for item in treino.itens.all %}
+            <li class="list-group-item">
+                <strong>{{ item.exercicio.nome }}</strong>
+                <div class="text-muted small">{{ item.series }} séries × {{ item.repeticoes }} repetições{% if
+                    item.carga_kg %} — {{ item.carga_kg }}kg{% endif %}</div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="alert alert-info">Sem exercícios neste treino.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

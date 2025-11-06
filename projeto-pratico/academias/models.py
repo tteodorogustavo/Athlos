@@ -68,6 +68,15 @@ class Aluno(models.Model):
         verbose_name="Personal Trainer Responsável",
     )
 
+    academia = models.ForeignKey(
+        Academia,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="alunos",
+        verbose_name="Academia",
+    )
+
     data_nascimento = models.DateField(
         null=True, blank=True, verbose_name="Data de Nascimento"
     )
