@@ -1,0 +1,22 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ academia.nome_fantasia }} - Academia{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>{{ academia.nome_fantasia }}</h3>
+        <div>
+            <a href="{% url 'academia_edit' academia.pk %}" class="btn btn-warning">Editar</a>
+            <button onclick="history.back()" class="btn btn-outline-light">Voltar</button>
+        </div>
+    </div>
+
+    <div class="card card-body">
+        <p><strong>CNPJ:</strong> {{ academia.cnpj }}</p>
+        <p><strong>Endereço:</strong> {{ academia.endereco }}</p>
+        <p><strong>Telefone:</strong> {{ academia.telefone }}</p>
+        <p><strong>Data de criação:</strong> {{ academia.data_criacao|date:"d/m/Y H:i" }}</p>
+    </div>
+</div>
+{% endblock %}

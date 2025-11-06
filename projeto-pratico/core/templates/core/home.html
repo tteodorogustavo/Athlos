@@ -1,0 +1,73 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Athlos - Transforme seu corpo, transforme sua vida{% endblock %}
+
+{% block content %}
+<div class="container-fluid vh-100 d-flex align-items-center">
+    <div class="row w-100">
+        <div class="col-lg-6 d-flex flex-column justify-content-center text-white px-5">
+            <h1 class="display-3 fw-bold mb-4">
+                <i class="bi bi-lightning-charge-fill"></i> Athlos
+            </h1>
+            <h2 class="display-6 mb-4">Transforme seu corpo, transforme sua vida</h2>
+            <p class="lead mb-5">
+                Sistema completo de gestão de treinos para academias, personal trainers e alunos.
+                Organize, acompanhe e evolua seus treinos de forma profissional.
+            </p>
+            <div class="d-flex gap-3">
+                <a href="{% url 'login' %}" class="btn btn-light btn-lg btn-custom">
+                    <i class="bi bi-box-arrow-in-right"></i> Entrar
+                </a>
+            </div>
+        </div>
+
+        <div class="col-lg-6 d-flex align-items-center justify-content-center">
+            <div class="card card-custom p-5" style="max-width: 500px; width: 100%;">
+                <h3 class="text-center mb-4">
+                    <i class="bi bi-award-fill text-primary"></i> Por que escolher Athlos?
+                </h3>
+
+                <div class="feature mb-4">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-check-circle-fill text-success fs-3 me-3"></i>
+                        <div>
+                            <h5>Gestão Completa</h5>
+                            <p class="text-muted">Controle total de alunos, treinos e exercícios em um só lugar.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature mb-4">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-graph-up-arrow text-success fs-3 me-3"></i>
+                        <div>
+                            <h5>Acompanhamento de Evolução</h5>
+                            <p class="text-muted">Monitore o progresso dos alunos com relatórios detalhados.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature mb-4">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-people-fill text-success fs-3 me-3"></i>
+                        <div>
+                            <h5>Múltiplos Perfis</h5>
+                            <p class="text-muted">Interface adaptada para admins, personal trainers e alunos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-phone-fill text-success fs-3 me-3"></i>
+                        <div>
+                            <h5>Acesso em Qualquer Lugar</h5>
+                            <p class="text-muted">Responsivo e otimizado para todos os dispositivos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

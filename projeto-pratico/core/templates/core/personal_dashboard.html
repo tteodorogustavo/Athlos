@@ -1,0 +1,281 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Dashboard Personal - Athlos{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4" style="min-height: calc(100vh - 56px);">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="text-white mb-3">
+                    <i class="bi bi-person-badge"></i> Dashboard Personal Trainer
+                </h1>
+                <p class="text-white-50">Olá, {{ user.get_full_name|default:user.email }}! Gerencie seus alunos e
+                    treinos.</p>
+            </div>
+        </div>
+
+        <!-- Cards de Estatísticas -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1 opacity-75">Academias</h6>
+                            <h2 class="mb-0 fw-bold">{{ total_academias }}</h2>
+                        </div>
+                        <i class="bi bi-building stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1 opacity-75">Meus Alunos</h6>
+                            <h2 class="mb-0 fw-bold">{{ total_alunos }}</h2>
+                        </div>
+                        <i class="bi bi-people stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1 opacity-75">Treinos Criados</h6>
+                            <h2 class="mb-0 fw-bold">{{ total_treinos }}</h2>
+                        </div>
+                        <i class="bi bi-clipboard-check stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Academias -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="dashboard-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0"><i class="bi bi-building"></i> Academias</h4>
+                        <a href="{% url 'academia_create' %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Nova Academia
+                        </a>
+                    </div>
+
+                    {% if academias %}
+                    <div class="row g-3">
+                        {% for academia in academias %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="bi bi-building-fill text-primary"></i>
+                                        {{ academia.nome_fantasia }}
+                                    </h5>
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            <i class="bi bi-geo-alt"></i> {{ academia.endereco|truncatewords:5 }}<br>
+                                            <i class="bi bi-telephone"></i> {{ academia.telefone }}
+                                        </small>
+                                    </p>
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'academia_detail' academia.pk %}"
+                                            class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> Ver
+                                        </a>
+                                        <a href="{% url 'academia_edit' academia.pk %}"
+                                            class="btn btn-sm btn-outline-warning">
+                                            <i class="bi bi-pencil"></i> Editar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Você ainda não cadastrou nenhuma academia.
+                        <a href="{% url 'academia_create' %}" class="alert-link">Criar primeira academia</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Informações do Personal -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="dashboard-card">
+                    <h4 class="mb-3"><i class="bi bi-person-circle"></i> Minhas Informações</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-envelope"></i> Email:</strong> {{ user.email }}</p>
+                            <p><strong><i class="bi bi-card-text"></i> CREF:</strong> {{ personal.cref }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-star"></i> Especialidade:</strong> {{ personal.especialidade }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Alunos -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="dashboard-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0"><i class="bi bi-people-fill"></i> Meus Alunos</h4>
+                        <a href="{% url 'aluno_create' %}" class="btn btn-primary">
+                            <i class="bi bi-person-plus-fill"></i> Novo Aluno
+                        </a>
+                    </div>
+
+                    {% if alunos %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th><i class="bi bi-person"></i> Nome</th>
+                                    <th><i class="bi bi-envelope"></i> Email</th>
+                                    <th><i class="bi bi-calendar"></i> Data de Nascimento</th>
+                                    <th><i class="bi bi-bullseye"></i> Objetivo</th>
+                                    <th class="text-end">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for aluno in alunos %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'aluno_detail' aluno.pk %}" class="text-decoration-none">
+                                            {{ aluno.user.get_full_name|default:aluno.user.email }}
+                                        </a>
+                                    </td>
+                                    <td>{{ aluno.user.email }}</td>
+                                    <td>{{ aluno.data_nascimento|date:"d/m/Y"|default:"Não informado" }}</td>
+                                    <td>{{ aluno.objetivo|default:"Não definido" }}</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'aluno_detail' aluno.pk %}"
+                                            class="btn btn-sm btn-outline-primary" title="Ver detalhes">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{% url 'aluno_edit' aluno.pk %}" class="btn btn-sm btn-outline-warning"
+                                            title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                            data-bs-toggle="modal" data-bs-target="#deleteModal{{ aluno.pk }}"
+                                            title="Excluir">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Modal de confirmação de exclusão -->
+                                <div class="modal fade" id="deleteModal{{ aluno.pk }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Confirmar Exclusão</h5>
+                                                <button type="button" class="btn-close"
+                                                    data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Tem certeza que deseja excluir o aluno <strong>{{
+                                                    aluno.user.get_full_name|default:aluno.user.email }}</strong>?
+                                                <br><br>
+                                                <strong class="text-danger">Atenção:</strong> Esta ação não pode ser
+                                                desfeita e todos os treinos deste aluno serão excluídos também.
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Cancelar</button>
+                                                <form method="post" action="{% url 'aluno_delete' aluno.pk %}"
+                                                    style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger">Excluir</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+                        <p class="text-muted mt-3">Você ainda não tem alunos cadastrados.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Treinos -->
+        <div class="row">
+            <div class="col-12">
+                <div class="dashboard-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0"><i class="bi bi-clipboard-data-fill"></i> Meus Treinos</h4>
+                        <a href="{% url 'treino_create' %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle-fill"></i> Novo Treino
+                        </a>
+                    </div>
+
+                    {% if treinos %}
+                    <div class="row g-3">
+                        {% for treino in treinos %}
+                        <div class="col-md-4">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="bi bi-clipboard-data text-primary"></i>
+                                        <a href="{% url 'treino_detail' treino.pk %}"
+                                            class="text-decoration-none text-dark">
+                                            {{ treino.nome_treino }}
+                                        </a>
+                                    </h5>
+                                    <p class="card-text text-muted small mb-2">
+                                        <i class="bi bi-person"></i> Aluno:
+                                        <a href="{% url 'aluno_detail' treino.aluno.pk %}" class="text-decoration-none">
+                                            {{ treino.aluno.user.get_full_name|default:treino.aluno.user.email }}
+                                        </a>
+                                    </p>
+                                    <p class="text-muted small mb-3">
+                                        <i class="bi bi-calendar"></i> Criado em: {{ treino.data_criacao|date:"d/m/Y" }}
+                                    </p>
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'treino_detail' treino.pk %}"
+                                            class="btn btn-sm btn-outline-primary flex-fill">
+                                            <i class="bi bi-eye"></i> Ver
+                                        </a>
+                                        <a href="{% url 'treino_edit' treino.pk %}"
+                                            class="btn btn-sm btn-outline-warning flex-fill">
+                                            <i class="bi bi-pencil"></i> Editar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-clipboard-x text-muted" style="font-size: 4rem;"></i>
+                        <p class="text-muted mt-3">Você ainda não criou nenhum treino.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

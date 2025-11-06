@@ -1,0 +1,111 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ aluno.user.get_full_name|default:aluno.user.email }} - Aluno{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3><i class="bi bi-person-circle"></i> {{ aluno.user.get_full_name|default:aluno.user.email }}</h3>
+        <div>
+            <a href="{% url 'aluno_edit' aluno.pk %}" class="btn btn-warning">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                <i class="bi bi-trash"></i> Excluir
+            </button>
+            <button onclick="history.back()" class="btn btn-outline-light">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação de exclusão -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Tem certeza que deseja excluir o aluno <strong>{{ aluno.user.get_full_name|default:aluno.user.email
+                        }}</strong>?
+                    <br><br>
+                    <strong class="text-danger">Atenção:</strong> Esta ação não pode ser desfeita e todos os treinos
+                    deste aluno serão excluídos também.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form method="post" action="{% url 'aluno_delete' aluno.pk %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Excluir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card card-body mb-3">
+                <h5><i class="bi bi-person-badge"></i> Informações Pessoais</h5>
+                <hr>
+                <p><strong>Email:</strong> {{ aluno.user.email }}</p>
+                <p><strong>Nome Completo:</strong> {{ aluno.user.first_name }} {{ aluno.user.last_name }}</p>
+                <p><strong>Data de Nascimento:</strong> {{ aluno.data_nascimento|date:"d/m/Y"|default:"Não informado" }}
+                </p>
+                <p><strong>Objetivo:</strong> {{ aluno.objetivo|default:"Não definido" }}</p>
+                <p><strong>Academia:</strong>
+                    {% if aluno.academia %}
+                    <a href="{% url 'academia_detail' aluno.academia.pk %}" class="text-decoration-none">
+                        {{ aluno.academia.nome_fantasia }}
+                    </a>
+                    {% else %}
+                    <span class="text-muted">Não atribuído</span>
+                    {% endif %}
+                </p>
+                <p><strong>Personal Responsável:</strong>
+                    {% if aluno.personal_responsavel %}
+                    {{ aluno.personal_responsavel.user.get_full_name|default:aluno.personal_responsavel.user.email }}
+                    {% else %}
+                    <span class="text-muted">Não atribuído</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card card-body mb-3">
+                <h5><i class="bi bi-clipboard-data"></i> Treinos ({{ treinos.count }})</h5>
+                <hr>
+                {% if treinos %}
+                <ul class="list-group list-group-flush">
+                    {% for treino in treinos %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ treino.nome_treino }}</strong>
+                            <br>
+                            <small class="text-muted">
+                                <i class="bi bi-calendar"></i> {{ treino.data_criacao|date:"d/m/Y" }}
+                            </small>
+                        </div>
+                        <a href="{% url 'treino_detail' treino.pk %}" class="btn btn-sm btn-outline-primary">
+                            Ver
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted">Nenhum treino cadastrado ainda.</p>
+                {% endif %}
+
+                <div class="mt-3">
+                    <a href="{% url 'treino_create' %}" class="btn btn-sm btn-primary w-100">
+                        <i class="bi bi-plus-circle"></i> Novo Treino para este Aluno
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

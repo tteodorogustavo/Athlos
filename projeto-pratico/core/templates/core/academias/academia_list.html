@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Academias - Athlos{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Academias</h3>
+        <a href="{% url 'academia_create' %}" class="btn btn-primary">Nova Academia</a>
+    </div>
+
+    {% if academias %}
+    <div class="table-responsive">
+        <table class="table table-striped table-dark">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>CNPJ</th>
+                    <th>Telefone</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in academias %}
+                <tr>
+                    <td>{{ a.nome_fantasia }}</td>
+                    <td>{{ a.cnpj }}</td>
+                    <td>{{ a.telefone }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'academia_detail' a.pk %}" class="btn btn-sm btn-outline-light">Ver</a>
+                        <a href="{% url 'academia_edit' a.pk %}" class="btn btn-sm btn-outline-warning">Editar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">Nenhuma academia encontrada.</div>
+    {% endif %}
+</div>
+{% endblock %}
