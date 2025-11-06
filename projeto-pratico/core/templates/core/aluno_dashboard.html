@@ -23,15 +23,17 @@
                     <div class="row">
                         <div class="col-md-6">
                             <p><strong><i class="bi bi-envelope"></i> Email:</strong> {{ user.email }}</p>
-                            <p><strong><i class="bi bi-calendar"></i> Data de Nascimento:</strong> {{
-                                aluno.data_nascimento|date:"d/m/Y"|default:"Não informado" }}</p>
+                            <p><strong><i class="bi bi-calendar"></i> Data de Nascimento:</strong> {% if
+                                aluno.data_nascimento %}{{ aluno.data_nascimento|date:"d/m/Y" }}{% else %}Não
+                                informado{% endif %}</p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong><i class="bi bi-bullseye"></i> Objetivo:</strong> {{ aluno.objetivo|default:"Não
-                                definido" }}</p>
+                            <p><strong><i class="bi bi-bullseye"></i> Objetivo:</strong> {% if aluno.objetivo %}{{
+                                aluno.objetivo }}{% else %}Não definido{% endif %}</p>
                             {% if personal %}
-                            <p><strong><i class="bi bi-person-badge"></i> Personal Trainer:</strong> {{
-                                personal.user.get_full_name|default:personal.user.email }}</p>
+                            <p><strong><i class="bi bi-person-badge"></i> Personal Trainer:</strong> {% if
+                                personal.user.get_full_name %}{{ personal.user.get_full_name }}{% else %}{{
+                                personal.user.email }}{% endif %}</p>
                             {% else %}
                             <p><strong><i class="bi bi-person-badge"></i> Personal Trainer:</strong> <span
                                     class="text-muted">Não atribuído</span></p>
@@ -72,9 +74,11 @@
                                     <div class="d-flex justify-content-between align-items-center border-top pt-3">
                                         <div>
                                             <small class="text-muted d-block">
-                                                <i class="bi bi-person-badge"></i> Criado por: {{
-                                                treino.personal_criador.user.get_full_name|default:treino.personal_criador.user.email
-                                                }}
+                                                <i class="bi bi-person-badge"></i> Criado por: {% if
+                                                treino.personal_criador %}{% if
+                                                treino.personal_criador.user.get_full_name %}{{
+                                                treino.personal_criador.user.get_full_name }}{% else %}{{
+                                                treino.personal_criador.user.email }}{% endif %}{% else %}—{% endif %}
                                             </small>
                                             <small class="text-muted d-block">
                                                 <i class="bi bi-calendar"></i> {{ treino.data_criacao|date:"d/m/Y" }}
@@ -92,10 +96,8 @@
                                                 <strong>{{ item.exercicio.nome }}</strong>
                                                 <br>
                                                 <small class="text-muted">
-                                                    {{ item.series }} séries × {{
-                                                    item.repeticoes }} repetições
-                                                    {% if item.carga_kg %} - {{ item.carga_kg }}kg{%
-                                                    endif %}
+                                                    {{ item.series }} séries × {{ item.repeticoes }} repetições
+                                                    {% if item.carga_kg %} - {{ item.carga_kg }}kg{% endif %}
                                                 </small>
                                             </li>
                                             {% endfor %}
@@ -121,9 +123,9 @@
                         <i class="bi bi-clipboard-x text-muted" style="font-size: 4rem;"></i>
                         <p class="text-muted mt-3 mb-4">Você ainda não possui treinos cadastrados.</p>
                         {% if personal %}
-                        <p class="text-muted">Entre em contato com seu personal trainer <strong>{{
-                                personal.user.get_full_name|default:personal.user.email }}</strong> para criar seus
-                            treinos.</p>
+                        <p class="text-muted">Entre em contato com seu personal trainer <strong>{% if
+                                personal.user.get_full_name %}{{ personal.user.get_full_name }}{% else %}{{
+                                personal.user.email }}{% endif %}</strong> para criar seus treinos.</p>
                         {% else %}
                         <p class="text-muted">Você ainda não tem um personal trainer atribuído. Entre em contato com a
                             administração.</p>
