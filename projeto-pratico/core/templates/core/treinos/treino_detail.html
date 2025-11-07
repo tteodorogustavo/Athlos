@@ -14,9 +14,7 @@
 
     <div class="card card-body">
         <p><strong>Aluno:</strong> {{ treino.aluno.user.get_full_name|default:treino.aluno.user.email }}</p>
-        <p><strong>Personal:</strong> {% if treino.personal_criador %}{{
-            treino.personal_criador.user.get_full_name|default:treino.personal_criador.user.email }}{% else %}—{% endif
-            %}</p>
+        <p><strong>Personal:</strong> {% if treino.personal_criador %}{{ treino.personal_criador.user.get_full_name|default:treino.personal_criador.user.email }}{% else %}—{% endif %}</p>
         <p><strong>Data de criação:</strong> {{ treino.data_criacao|date:"d/m/Y H:i" }}</p>
         <p><strong>Ativo:</strong> {{ treino.ativo }}</p>
 
@@ -27,8 +25,7 @@
             {% for item in treino.itens.all %}
             <li class="list-group-item">
                 <strong>{{ item.exercicio.nome }}</strong>
-                <div class="text-muted small">{{ item.series }} séries × {{ item.repeticoes }} repetições{% if
-                    item.carga_kg %} — {{ item.carga_kg }}kg{% endif %}</div>
+                <div class="text-muted small">{{ item.series }} séries × {{ item.repeticoes }} repetições{% if item.carga_kg %} — {{ item.carga_kg }}kg{% endif %}</div>
             </li>
             {% endfor %}
         </ul>
