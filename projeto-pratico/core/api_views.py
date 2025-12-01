@@ -17,8 +17,10 @@ from .serializers import (
     UserDetailSerializer,
     AcademiaSerializer,
     PersonalTrainerSerializer,
+    PersonalTrainerCreateUpdateSerializer,
     AlunoListSerializer,
     AlunoDetailSerializer,
+    AlunoCreateUpdateSerializer,
     ExercicioSerializer,
     ExercicioListSerializer,
     TreinoListSerializer,
@@ -93,8 +95,12 @@ class PersonalTrainerViewSet(viewsets.ModelViewSet):
     """ViewSet para gerenciamento de Personal Trainers"""
 
     queryset = PersonalTrainer.objects.all()
-    serializer_class = PersonalTrainerSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.action in ["create", "update", "partial_update"]:
+            return PersonalTrainerCreateUpdateSerializer
+        return PersonalTrainerSerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -118,6 +124,8 @@ class AlunoViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "list":
             return AlunoListSerializer
+        elif self.action in ["create", "update", "partial_update"]:
+            return AlunoCreateUpdateSerializer
         return AlunoDetailSerializer
 
     def get_queryset(self):

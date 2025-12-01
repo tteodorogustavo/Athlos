@@ -51,6 +51,7 @@ const adminMenuItems = [
     { title: 'Dashboard', url: '/dashboard/admin', icon: LayoutDashboard },
     { title: 'Academias', url: '/dashboard/admin/academias', icon: Building2 },
     { title: 'Personais', url: '/dashboard/admin/personais', icon: Users },
+    { title: 'Alunos', url: '/dashboard/admin/alunos', icon: Users },
     { title: 'Relatórios', url: '/dashboard/admin/relatorios', icon: BarChart3 },
 ];
 

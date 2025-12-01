@@ -7,7 +7,18 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Users, Search, Plus, Dumbbell, Loader2, Eye } from "lucide-react";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Users, Search, Plus, Dumbbell, Loader2, Eye, Trash2 } from "lucide-react";
 import { personalAPI } from "@/lib/api";
 
 interface Personal {
@@ -28,21 +39,34 @@ export default function AdminPersonaisPage() {
     const [personais, setPersonais] = useState<Personal[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [deleting, setDeleting] = useState<number | null>(null);
 
     useEffect(() => {
-        async function fetchPersonais() {
-            try {
-                const response = await personalAPI.list();
-                setPersonais(response.data || response);
-            } catch (error) {
-                console.error("Erro ao buscar personais:", error);
-            } finally {
-                setLoading(false);
-            }
-        }
-
         fetchPersonais();
     }, []);
+
+    async function fetchPersonais() {
+        try {
+            const response = await personalAPI.list();
+            setPersonais(response.data || response);
+        } catch (error) {
+            console.error("Erro ao buscar personais:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleDelete = async (id: number) => {
+        setDeleting(id);
+        try {
+            await personalAPI.delete(id);
+            setPersonais(personais.filter(p => p.id !== id));
+        } catch (error) {
+            console.error("Erro ao excluir personal:", error);
+        } finally {
+            setDeleting(null);
+        }
+    };
 
     const filteredPersonais = personais.filter(personal => {
         const nome = `${personal.user?.first_name || ""} ${personal.user?.last_name || ""}`.toLowerCase();
@@ -141,7 +165,7 @@ export default function AdminPersonaisPage() {
                                 <TableHead>Especialidade</TableHead>
                                 <TableHead className="text-center">Alunos</TableHead>
                                 <TableHead className="text-center">Treinos</TableHead>
-                                <TableHead className="w-[50px]"></TableHead>
+                                <TableHead className="w-[100px]">Ações</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -165,11 +189,41 @@ export default function AdminPersonaisPage() {
                                         <TableCell className="text-center">{personal.total_alunos || 0}</TableCell>
                                         <TableCell className="text-center">{personal.total_treinos || 0}</TableCell>
                                         <TableCell>
-                                            <Link href={`/dashboard/admin/personais/${personal.id}`}>
-                                                <Button variant="ghost" size="sm">
-                                                    <Eye className="h-4 w-4" />
-                                                </Button>
-                                            </Link>
+                                            <div className="flex items-center gap-1">
+                                                <Link href={`/dashboard/admin/personais/${personal.id}`}>
+                                                    <Button variant="ghost" size="sm">
+                                                        <Eye className="h-4 w-4" />
+                                                    </Button>
+                                                </Link>
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                Tem certeza que deseja excluir este personal? Esta ação não pode ser desfeita.
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                            <AlertDialogAction
+                                                                onClick={() => handleDelete(personal.id)}
+                                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                            >
+                                                                {deleting === personal.id ? (
+                                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                                ) : (
+                                                                    "Excluir"
+                                                                )}
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 ))

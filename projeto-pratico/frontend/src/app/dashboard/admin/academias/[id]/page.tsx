@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,17 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
     ArrowLeft,
     Loader2,
     Building2,
@@ -24,6 +36,7 @@ import {
     Dumbbell,
     Pencil,
     Eye,
+    Trash2,
 } from "lucide-react";
 import { academiaAPI, personalAPI, alunoAPI } from "@/lib/api";
 
@@ -45,20 +58,36 @@ interface Academia {
 }
 
 interface User {
-    id: number;
-    user: {
+    id?: number;
+    user?: {
+        id?: number;
         first_name: string;
         last_name: string;
         email: string;
     };
+    nome?: string;
+    email?: string;
 }
 
 export default function AcademiaDetalhesPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = use(params);
+    const router = useRouter();
     const [academia, setAcademia] = useState<Academia | null>(null);
     const [personais, setPersonais] = useState<User[]>([]);
     const [alunos, setAlunos] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
+    const [deleting, setDeleting] = useState(false);
+
+    const handleDelete = async () => {
+        setDeleting(true);
+        try {
+            await academiaAPI.delete(resolvedParams.id);
+            router.push("/dashboard/admin/academias");
+        } catch (error) {
+            console.error("Erro ao excluir academia:", error);
+            setDeleting(false);
+        }
+    };
 
     useEffect(() => {
         async function loadData() {
@@ -130,12 +159,39 @@ export default function AcademiaDetalhesPage({ params }: { params: Promise<{ id:
                         )}
                     </div>
                 </div>
-                <Link href={`/dashboard/admin/academias/${resolvedParams.id}/editar`}>
-                    <Button>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Editar
-                    </Button>
-                </Link>
+                <div className="flex gap-2">
+                    <Link href={`/dashboard/admin/academias/${resolvedParams.id}/editar`}>
+                        <Button>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Editar
+                        </Button>
+                    </Link>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="destructive">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Excluir
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Tem certeza que deseja excluir a academia {academia.nome_fantasia}? Esta ação não pode ser desfeita.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={handleDelete}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                    {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Excluir"}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </div>
             </div>
 
             {/* Stats Cards */}
@@ -257,13 +313,13 @@ export default function AcademiaDetalhesPage({ params }: { params: Promise<{ id:
                             </TableHeader>
                             <TableBody>
                                 {personais.slice(0, 5).map((personal) => (
-                                    <TableRow key={personal.id}>
+                                    <TableRow key={personal.id || personal.user?.id}>
                                         <TableCell className="font-medium">
-                                            {personal.user.first_name} {personal.user.last_name}
+                                            {personal.user?.first_name || personal.nome} {personal.user?.last_name || ""}
                                         </TableCell>
-                                        <TableCell>{personal.user.email}</TableCell>
+                                        <TableCell>{personal.user?.email || personal.email}</TableCell>
                                         <TableCell className="text-right">
-                                            <Link href={`/dashboard/admin/personais/${personal.id}`}>
+                                            <Link href={`/dashboard/admin/personais/${personal.id || personal.user?.id}`}>
                                                 <Button variant="ghost" size="sm">
                                                     <Eye className="h-4 w-4" />
                                                 </Button>
@@ -301,11 +357,11 @@ export default function AcademiaDetalhesPage({ params }: { params: Promise<{ id:
                             </TableHeader>
                             <TableBody>
                                 {alunos.slice(0, 5).map((aluno) => (
-                                    <TableRow key={aluno.id}>
+                                    <TableRow key={aluno.id || aluno.user?.id}>
                                         <TableCell className="font-medium">
-                                            {aluno.user.first_name} {aluno.user.last_name}
+                                            {aluno.user?.first_name || aluno.nome} {aluno.user?.last_name || ""}
                                         </TableCell>
-                                        <TableCell>{aluno.user.email}</TableCell>
+                                        <TableCell>{aluno.user?.email || aluno.email}</TableCell>
                                         <TableCell className="text-right">
                                             <Button variant="ghost" size="sm">
                                                 <Eye className="h-4 w-4" />

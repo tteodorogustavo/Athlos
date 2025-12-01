@@ -7,7 +7,18 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Building2, Search, Plus, Users, Dumbbell, Loader2, Eye } from "lucide-react";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Building2, Search, Plus, Users, Dumbbell, Loader2, Eye, Trash2 } from "lucide-react";
 import { academiaAPI } from "@/lib/api";
 
 interface Academia {
@@ -24,21 +35,34 @@ export default function AdminAcademiasPage() {
     const [academias, setAcademias] = useState<Academia[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [deleting, setDeleting] = useState<number | null>(null);
 
     useEffect(() => {
-        async function fetchAcademias() {
-            try {
-                const response = await academiaAPI.list();
-                setAcademias(response.data || response);
-            } catch (error) {
-                console.error("Erro ao buscar academias:", error);
-            } finally {
-                setLoading(false);
-            }
-        }
-
         fetchAcademias();
     }, []);
+
+    async function fetchAcademias() {
+        try {
+            const response = await academiaAPI.list();
+            setAcademias(response.data || response);
+        } catch (error) {
+            console.error("Erro ao buscar academias:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleDelete = async (id: number) => {
+        setDeleting(id);
+        try {
+            await academiaAPI.delete(id);
+            setAcademias(academias.filter(a => a.id !== id));
+        } catch (error) {
+            console.error("Erro ao excluir academia:", error);
+        } finally {
+            setDeleting(null);
+        }
+    };
 
     const filteredAcademias = academias.filter(academia => {
         const nome = academia.nome_fantasia?.toLowerCase() || "";
@@ -135,7 +159,7 @@ export default function AdminAcademiasPage() {
                                 <TableHead className="text-center">Alunos</TableHead>
                                 <TableHead className="text-center">Personais</TableHead>
                                 <TableHead className="text-center">Status</TableHead>
-                                <TableHead className="w-[50px]"></TableHead>
+                                <TableHead className="w-[100px]">Ações</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -159,11 +183,41 @@ export default function AdminAcademiasPage() {
                                             </Badge>
                                         </TableCell>
                                         <TableCell>
-                                            <Link href={`/dashboard/admin/academias/${academia.id}`}>
-                                                <Button variant="ghost" size="sm">
-                                                    <Eye className="h-4 w-4" />
-                                                </Button>
-                                            </Link>
+                                            <div className="flex items-center gap-1">
+                                                <Link href={`/dashboard/admin/academias/${academia.id}`}>
+                                                    <Button variant="ghost" size="sm">
+                                                        <Eye className="h-4 w-4" />
+                                                    </Button>
+                                                </Link>
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                Tem certeza que deseja excluir a academia {academia.nome_fantasia}? Esta ação não pode ser desfeita.
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                            <AlertDialogAction
+                                                                onClick={() => handleDelete(academia.id)}
+                                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                            >
+                                                                {deleting === academia.id ? (
+                                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                                ) : (
+                                                                    "Excluir"
+                                                                )}
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 ))

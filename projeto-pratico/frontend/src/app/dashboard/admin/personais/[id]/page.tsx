@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,17 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
     ArrowLeft,
     Loader2,
     Mail,
@@ -24,12 +36,13 @@ import {
     Pencil,
     Eye,
     Building2,
+    Trash2,
 } from "lucide-react";
 import { personalAPI, alunoAPI } from "@/lib/api";
 
 interface Personal {
     id: number;
-    user: {
+    user?: {
         id: number;
         email: string;
         first_name: string;
@@ -39,6 +52,8 @@ interface Personal {
             nome_fantasia: string;
         };
     };
+    nome?: string;
+    email?: string;
     cref: string;
     especialidade?: string;
     telefone?: string;
@@ -48,20 +63,36 @@ interface Personal {
 
 interface Aluno {
     id: number;
-    user: {
+    user?: {
+        id?: number;
         first_name: string;
         last_name: string;
         email: string;
     };
+    nome?: string;
+    email?: string;
     objetivo?: string;
     total_treinos?: number;
 }
 
 export default function PersonalDetalhesPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = use(params);
+    const router = useRouter();
     const [personal, setPersonal] = useState<Personal | null>(null);
     const [alunos, setAlunos] = useState<Aluno[]>([]);
     const [loading, setLoading] = useState(true);
+    const [deleting, setDeleting] = useState(false);
+
+    const handleDelete = async () => {
+        setDeleting(true);
+        try {
+            await personalAPI.delete(resolvedParams.id);
+            router.push("/dashboard/admin/personais");
+        } catch (error) {
+            console.error("Erro ao excluir personal:", error);
+            setDeleting(false);
+        }
+    };
 
     useEffect(() => {
         async function loadData() {
@@ -119,21 +150,48 @@ export default function PersonalDetalhesPage({ params }: { params: Promise<{ id:
                     <div>
                         <div className="flex items-center gap-2">
                             <h1 className="text-3xl font-bold">
-                                {personal.user.first_name} {personal.user.last_name}
+                                {personal.user?.first_name || personal.nome} {personal.user?.last_name || ""}
                             </h1>
                             <Badge variant={personal.ativo !== false ? "default" : "secondary"}>
                                 {personal.ativo !== false ? "Ativo" : "Inativo"}
                             </Badge>
                         </div>
-                        <p className="text-muted-foreground">{personal.user.email}</p>
+                        <p className="text-muted-foreground">{personal.user?.email || personal.email}</p>
                     </div>
                 </div>
-                <Link href={`/dashboard/admin/personais/${resolvedParams.id}/editar`}>
-                    <Button>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Editar
-                    </Button>
-                </Link>
+                <div className="flex gap-2">
+                    <Link href={`/dashboard/admin/personais/${resolvedParams.id}/editar`}>
+                        <Button>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Editar
+                        </Button>
+                    </Link>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="destructive">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Excluir
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Tem certeza que deseja excluir este personal? Esta ação não pode ser desfeita.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={handleDelete}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                    {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Excluir"}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </div>
             </div>
 
             {/* Stats Cards */}
@@ -167,7 +225,7 @@ export default function PersonalDetalhesPage({ params }: { params: Promise<{ id:
                         </div>
                     </CardContent>
                 </Card>
-                {personal.user.academia && (
+                {personal.user?.academia && (
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Academia</CardTitle>
@@ -175,7 +233,7 @@ export default function PersonalDetalhesPage({ params }: { params: Promise<{ id:
                         </CardHeader>
                         <CardContent>
                             <div className="text-lg font-bold truncate">
-                                {personal.user.academia.nome_fantasia}
+                                {personal.user?.academia?.nome_fantasia}
                             </div>
                         </CardContent>
                     </Card>
@@ -193,7 +251,7 @@ export default function PersonalDetalhesPage({ params }: { params: Promise<{ id:
                             <Mail className="h-5 w-5 text-muted-foreground" />
                             <div>
                                 <p className="text-sm text-muted-foreground">Email</p>
-                                <p className="font-medium">{personal.user.email}</p>
+                                <p className="font-medium">{personal.user?.email || personal.email}</p>
                             </div>
                         </div>
                         {personal.telefone && (
@@ -214,16 +272,16 @@ export default function PersonalDetalhesPage({ params }: { params: Promise<{ id:
                                 </div>
                             </div>
                         )}
-                        {personal.user.academia && (
+                        {personal.user?.academia && (
                             <div className="flex items-center gap-3">
                                 <Building2 className="h-5 w-5 text-muted-foreground" />
                                 <div>
                                     <p className="text-sm text-muted-foreground">Academia</p>
                                     <Link
-                                        href={`/dashboard/admin/academias/${personal.user.academia.id}`}
+                                        href={`/dashboard/admin/academias/${personal.user?.academia?.id}`}
                                         className="font-medium text-primary hover:underline"
                                     >
-                                        {personal.user.academia.nome_fantasia}
+                                        {personal.user?.academia?.nome_fantasia}
                                     </Link>
                                 </div>
                             </div>
@@ -264,11 +322,11 @@ export default function PersonalDetalhesPage({ params }: { params: Promise<{ id:
                             </TableHeader>
                             <TableBody>
                                 {alunos.map((aluno) => (
-                                    <TableRow key={aluno.id}>
+                                    <TableRow key={aluno.id || aluno.user?.id}>
                                         <TableCell className="font-medium">
-                                            {aluno.user.first_name} {aluno.user.last_name}
+                                            {aluno.user?.first_name || aluno.nome} {aluno.user?.last_name || ""}
                                         </TableCell>
-                                        <TableCell>{aluno.user.email}</TableCell>
+                                        <TableCell>{aluno.user?.email || aluno.email}</TableCell>
                                         <TableCell>{aluno.objetivo || "-"}</TableCell>
                                         <TableCell className="text-center">
                                             {aluno.total_treinos || 0}

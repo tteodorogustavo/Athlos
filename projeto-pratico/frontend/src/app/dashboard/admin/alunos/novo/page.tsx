@@ -15,40 +15,53 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Loader2, UserPlus } from "lucide-react";
-import { personalAPI, academiaAPI } from "@/lib/api";
+import { ArrowLeft, Loader2, Save } from "lucide-react";
+import { alunoAPI, academiaAPI, personalAPI } from "@/lib/api";
 
 interface Academia {
     id: number;
     nome_fantasia: string;
 }
 
-export default function NovoPersonalPage() {
+interface Personal {
+    id: number;
+    user?: {
+        first_name: string;
+        last_name: string;
+    };
+    nome?: string;
+}
+
+export default function NovoAlunoPage() {
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
+    const [saving, setSaving] = useState(false);
     const [academias, setAcademias] = useState<Academia[]>([]);
+    const [personais, setPersonais] = useState<Personal[]>([]);
     const [formData, setFormData] = useState({
         email: "",
         password: "",
         first_name: "",
         last_name: "",
-        cref: "",
-        especialidade: "",
-        telefone: "",
-        biografia: "",
+        data_nascimento: "",
+        objetivo: "",
         academia: "",
+        personal_responsavel: "",
     });
 
     useEffect(() => {
-        async function loadAcademias() {
+        async function loadData() {
             try {
-                const response = await academiaAPI.list();
-                setAcademias(response.data || response);
+                const [academiasData, personaisData] = await Promise.all([
+                    academiaAPI.list(),
+                    personalAPI.list(),
+                ]);
+                setAcademias(academiasData.data || academiasData || []);
+                setPersonais(personaisData.data || personaisData || []);
             } catch (error) {
-                console.error("Erro ao carregar academias:", error);
+                console.error("Erro ao carregar dados:", error);
             }
         }
-        loadAcademias();
+        loadData();
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -62,7 +75,7 @@ export default function NovoPersonalPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
+        setSaving(true);
 
         try {
             const payload = {
@@ -70,43 +83,39 @@ export default function NovoPersonalPage() {
                 password: formData.password,
                 first_name: formData.first_name,
                 last_name: formData.last_name,
-                cref: formData.cref,
-                especialidade: formData.especialidade || null,
+                data_nascimento: formData.data_nascimento || null,
+                objetivo: formData.objetivo || null,
+                academia: formData.academia ? parseInt(formData.academia) : null,
+                personal_responsavel: formData.personal_responsavel ? parseInt(formData.personal_responsavel) : null,
             };
 
-            await personalAPI.create(payload);
-            router.push("/dashboard/admin/personais");
-        } catch (error: any) {
-            console.error("Erro ao criar personal:", error);
-            alert(error.response?.data?.error || "Erro ao criar personal trainer");
-        } finally {
-            setLoading(false);
+            await alunoAPI.create(payload);
+            router.push("/dashboard/admin/alunos");
+        } catch (error) {
+            console.error("Erro ao criar aluno:", error);
+            setSaving(false);
         }
     };
 
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-4">
-                <Link href="/dashboard/admin/personais">
+                <Link href="/dashboard/admin/alunos">
                     <Button variant="outline" size="icon">
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                 </Link>
                 <div>
-                    <h1 className="text-3xl font-bold">Novo Personal Trainer</h1>
-                    <p className="text-muted-foreground">
-                        Cadastre um novo personal trainer na plataforma
-                    </p>
+                    <h1 className="text-3xl font-bold">Novo Aluno</h1>
+                    <p className="text-muted-foreground">Cadastre um novo aluno na plataforma</p>
                 </div>
             </div>
 
             <form onSubmit={handleSubmit}>
                 <Card>
                     <CardHeader>
-                        <CardTitle>Informações do Personal</CardTitle>
-                        <CardDescription>
-                            Preencha os dados do novo personal trainer
-                        </CardDescription>
+                        <CardTitle>Informações do Aluno</CardTitle>
+                        <CardDescription>Preencha os dados do novo aluno</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         {/* Dados de Acesso */}
@@ -119,10 +128,9 @@ export default function NovoPersonalPage() {
                                         id="email"
                                         name="email"
                                         type="email"
+                                        required
                                         value={formData.email}
                                         onChange={handleChange}
-                                        required
-                                        placeholder="personal@email.com"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -131,10 +139,9 @@ export default function NovoPersonalPage() {
                                         id="password"
                                         name="password"
                                         type="password"
+                                        required
                                         value={formData.password}
                                         onChange={handleChange}
-                                        required
-                                        placeholder="Senha inicial"
                                     />
                                 </div>
                             </div>
@@ -149,10 +156,9 @@ export default function NovoPersonalPage() {
                                     <Input
                                         id="first_name"
                                         name="first_name"
+                                        required
                                         value={formData.first_name}
                                         onChange={handleChange}
-                                        required
-                                        placeholder="Nome"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -160,102 +166,97 @@ export default function NovoPersonalPage() {
                                     <Input
                                         id="last_name"
                                         name="last_name"
+                                        required
                                         value={formData.last_name}
                                         onChange={handleChange}
-                                        required
-                                        placeholder="Sobrenome"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="data_nascimento">Data de Nascimento</Label>
+                                    <Input
+                                        id="data_nascimento"
+                                        name="data_nascimento"
+                                        type="date"
+                                        value={formData.data_nascimento}
+                                        onChange={handleChange}
                                     />
                                 </div>
                             </div>
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label htmlFor="telefone">Telefone</Label>
-                                    <Input
-                                        id="telefone"
-                                        name="telefone"
-                                        value={formData.telefone}
-                                        onChange={handleChange}
-                                        placeholder="(00) 00000-0000"
-                                    />
-                                </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="objetivo">Objetivo</Label>
+                                <Textarea
+                                    id="objetivo"
+                                    name="objetivo"
+                                    value={formData.objetivo}
+                                    onChange={handleChange}
+                                    placeholder="Ex: Hipertrofia, emagrecimento, condicionamento..."
+                                    rows={3}
+                                />
                             </div>
                         </div>
 
-                        {/* Dados Profissionais */}
+                        {/* Vinculações */}
                         <div className="space-y-4">
-                            <h3 className="font-semibold text-lg border-b pb-2">Dados Profissionais</h3>
+                            <h3 className="font-semibold text-lg border-b pb-2">Vinculações</h3>
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="cref">CREF *</Label>
-                                    <Input
-                                        id="cref"
-                                        name="cref"
-                                        value={formData.cref}
-                                        onChange={handleChange}
-                                        required
-                                        placeholder="000000-G/UF"
-                                    />
+                                    <Label htmlFor="academia">Academia</Label>
+                                    <Select
+                                        value={formData.academia || "none"}
+                                        onValueChange={(value) => handleSelectChange("academia", value)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Selecione uma academia" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="none">Nenhuma</SelectItem>
+                                            {academias.map((academia) => (
+                                                <SelectItem key={academia.id} value={academia.id.toString()}>
+                                                    {academia.nome_fantasia}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="especialidade">Especialidade</Label>
-                                    <Input
-                                        id="especialidade"
-                                        name="especialidade"
-                                        value={formData.especialidade}
-                                        onChange={handleChange}
-                                        placeholder="Ex: Musculação, Funcional, etc"
-                                    />
+                                    <Label htmlFor="personal_responsavel">Personal Responsável</Label>
+                                    <Select
+                                        value={formData.personal_responsavel || "none"}
+                                        onValueChange={(value) => handleSelectChange("personal_responsavel", value)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Selecione um personal" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="none">Nenhum</SelectItem>
+                                            {personais.map((personal) => (
+                                                <SelectItem key={personal.id} value={personal.id.toString()}>
+                                                    {personal.nome || `${personal.user?.first_name || ""} ${personal.user?.last_name || ""}`}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="academia">Academia</Label>
-                                <Select
-                                    value={formData.academia}
-                                    onValueChange={(value) => handleSelectChange("academia", value)}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Selecione uma academia" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="">Nenhuma</SelectItem>
-                                        {academias.map((academia) => (
-                                            <SelectItem key={academia.id} value={academia.id.toString()}>
-                                                {academia.nome_fantasia}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="biografia">Biografia</Label>
-                                <Textarea
-                                    id="biografia"
-                                    name="biografia"
-                                    value={formData.biografia}
-                                    onChange={handleChange}
-                                    placeholder="Breve descrição profissional..."
-                                    rows={4}
-                                />
                             </div>
                         </div>
 
                         {/* Botões */}
                         <div className="flex gap-4 pt-4">
-                            <Link href="/dashboard/admin/personais">
+                            <Link href="/dashboard/admin/alunos">
                                 <Button type="button" variant="outline">
                                     Cancelar
                                 </Button>
                             </Link>
-                            <Button type="submit" disabled={loading}>
-                                {loading ? (
+                            <Button type="submit" disabled={saving}>
+                                {saving ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Cadastrando...
+                                        Salvando...
                                     </>
                                 ) : (
                                     <>
-                                        <UserPlus className="mr-2 h-4 w-4" />
-                                        Cadastrar Personal
+                                        <Save className="mr-2 h-4 w-4" />
+                                        Cadastrar Aluno
                                     </>
                                 )}
                             </Button>

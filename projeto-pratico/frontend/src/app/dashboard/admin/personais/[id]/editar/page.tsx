@@ -75,7 +75,7 @@ export default function EditarPersonalPage({ params }: { params: Promise<{ id: s
     };
 
     const handleSelectChange = (name: string, value: string) => {
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData(prev => ({ ...prev, [name]: value === "none" ? "" : value }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -84,16 +84,10 @@ export default function EditarPersonalPage({ params }: { params: Promise<{ id: s
 
         try {
             const payload = {
-                user: {
-                    first_name: formData.first_name,
-                    last_name: formData.last_name,
-                },
+                first_name: formData.first_name,
+                last_name: formData.last_name,
                 cref: formData.cref,
                 especialidade: formData.especialidade || null,
-                telefone: formData.telefone || null,
-                biografia: formData.biografia || null,
-                academia: formData.academia ? parseInt(formData.academia) : null,
-                ativo: formData.ativo,
             };
 
             await personalAPI.update(resolvedParams.id, payload);
@@ -205,14 +199,14 @@ export default function EditarPersonalPage({ params }: { params: Promise<{ id: s
                             <div className="space-y-2">
                                 <Label htmlFor="academia">Academia</Label>
                                 <Select
-                                    value={formData.academia}
-                                    onValueChange={(value) => handleSelectChange("academia", value)}
+                                    value={formData.academia || "none"}
+                                    onValueChange={(value) => handleSelectChange("academia", value === "none" ? "" : value)}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Selecione uma academia" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="">Nenhuma</SelectItem>
+                                        <SelectItem value="none">Nenhuma</SelectItem>
                                         {academias.map((academia) => (
                                             <SelectItem key={academia.id} value={academia.id.toString()}>
                                                 {academia.nome_fantasia}

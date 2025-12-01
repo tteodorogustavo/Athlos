@@ -67,6 +67,7 @@ class AcademiaSerializer(serializers.ModelSerializer):
 class PersonalTrainerSerializer(serializers.ModelSerializer):
     """Serializer para o modelo PersonalTrainer"""
 
+    id = serializers.IntegerField(source="user.id", read_only=True)
     user = UserSerializer(read_only=True)
     nome = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
@@ -76,6 +77,7 @@ class PersonalTrainerSerializer(serializers.ModelSerializer):
     class Meta:
         model = PersonalTrainer
         fields = [
+            "id",
             "user",
             "cref",
             "especialidade",
@@ -98,9 +100,81 @@ class PersonalTrainerSerializer(serializers.ModelSerializer):
         return obj.treinos_criados.count()
 
 
+class PersonalTrainerCreateUpdateSerializer(serializers.ModelSerializer):
+    """Serializer para criação e atualização de personal trainers"""
+
+    # Campos do usuário para criação
+    email = serializers.EmailField(write_only=True, required=False)
+    password = serializers.CharField(write_only=True, required=False)
+    first_name = serializers.CharField(write_only=True, required=False)
+    last_name = serializers.CharField(write_only=True, required=False)
+
+    # Campos aninhados para leitura
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = PersonalTrainer
+        fields = [
+            "user",
+            "email",
+            "password",
+            "first_name",
+            "last_name",
+            "cref",
+            "especialidade",
+        ]
+
+    def create(self, validated_data):
+        # Extrair dados do usuário
+        email = validated_data.pop("email")
+        password = validated_data.pop("password")
+        first_name = validated_data.pop("first_name", "")
+        last_name = validated_data.pop("last_name", "")
+
+        # Criar usuário
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            user_type="PERSONAL",
+        )
+
+        # Criar personal trainer
+        personal = PersonalTrainer.objects.create(user=user, **validated_data)
+        return personal
+
+    def update(self, instance, validated_data):
+        # Atualizar dados do usuário se fornecidos
+        user_data = {}
+        if "first_name" in validated_data:
+            user_data["first_name"] = validated_data.pop("first_name")
+        if "last_name" in validated_data:
+            user_data["last_name"] = validated_data.pop("last_name")
+
+        # Remover campos que não devem ser atualizados
+        validated_data.pop("email", None)
+        validated_data.pop("password", None)
+
+        if user_data:
+            for attr, value in user_data.items():
+                setattr(instance.user, attr, value)
+            instance.user.save()
+
+        # Atualizar dados do personal
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        return instance
+
+
 class AlunoListSerializer(serializers.ModelSerializer):
     """Serializer para listagem de alunos"""
 
+    id = serializers.IntegerField(source="user.id", read_only=True)
+    user = UserSerializer(read_only=True)
     nome = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
     academia_nome = serializers.SerializerMethodField()
@@ -110,6 +184,8 @@ class AlunoListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Aluno
         fields = [
+            "id",
+            "user",
             "user_id",
             "nome",
             "email",
@@ -170,6 +246,78 @@ class AlunoDetailSerializer(serializers.ModelSerializer):
 
     def get_total_treinos(self, obj):
         return obj.treinos.count()
+
+
+class AlunoCreateUpdateSerializer(serializers.ModelSerializer):
+    """Serializer para criação e atualização de alunos"""
+
+    # Campos do usuário para criação
+    email = serializers.EmailField(write_only=True, required=False)
+    password = serializers.CharField(write_only=True, required=False)
+    first_name = serializers.CharField(write_only=True, required=False)
+    last_name = serializers.CharField(write_only=True, required=False)
+
+    # Campos aninhados para atualização
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Aluno
+        fields = [
+            "user",
+            "email",
+            "password",
+            "first_name",
+            "last_name",
+            "personal_responsavel",
+            "academia",
+            "data_nascimento",
+            "objetivo",
+        ]
+
+    def create(self, validated_data):
+        # Extrair dados do usuário
+        email = validated_data.pop("email")
+        password = validated_data.pop("password")
+        first_name = validated_data.pop("first_name", "")
+        last_name = validated_data.pop("last_name", "")
+
+        # Criar usuário
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            user_type="ALUNO",
+        )
+
+        # Criar aluno
+        aluno = Aluno.objects.create(user=user, **validated_data)
+        return aluno
+
+    def update(self, instance, validated_data):
+        # Atualizar dados do usuário se fornecidos
+        user_data = {}
+        if "first_name" in validated_data:
+            user_data["first_name"] = validated_data.pop("first_name")
+        if "last_name" in validated_data:
+            user_data["last_name"] = validated_data.pop("last_name")
+
+        # Remover campos que não devem ser atualizados
+        validated_data.pop("email", None)
+        validated_data.pop("password", None)
+
+        if user_data:
+            for attr, value in user_data.items():
+                setattr(instance.user, attr, value)
+            instance.user.save()
+
+        # Atualizar dados do aluno
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        return instance
 
 
 class ExercicioSerializer(serializers.ModelSerializer):
