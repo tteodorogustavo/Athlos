@@ -1,6 +1,6 @@
-# 🏋️ Athlos - Sistema de Gerenciamento de Academias e Treinos
+# Athlos - Sistema de Gerenciamento de Academias e Treinos
 
-## 📋 Sobre o Projeto
+## Sobre o Projeto
 
 **Athlos** é um sistema completo de gerenciamento de academias desenvolvido com **Django** (backend) e **Next.js** (frontend), projetado para facilitar o relacionamento entre academias, personal trainers e alunos. O sistema permite o cadastro de academias, gerenciamento de usuários com diferentes perfis, criação de fichas de treino personalizadas e um catálogo extenso de exercícios.
 
@@ -8,7 +8,7 @@ O nome "Athlos" vem do grego antigo (ἆθλος), que significa "competição" 
 
 ---
 
-## 🚀 Como Rodar o Projeto
+## Como Rodar o Projeto
 
 ### Pré-requisitos
 
@@ -19,7 +19,7 @@ O nome "Athlos" vem do grego antigo (ἆθλος), que significa "competição" 
 
 ---
 
-### 📦 1. Backend (Django)
+### 1. Backend (Django)
 
 ```bash
 # Clone o repositório
@@ -48,7 +48,7 @@ O backend estará disponível em: **<http://localhost:8000>**
 
 ---
 
-### 🎨 2. Frontend (Next.js)
+### 2. Frontend (Next.js)
 
 ```bash
 # Navegue até a pasta do frontend
@@ -69,7 +69,7 @@ O frontend estará disponível em: **<http://localhost:3000>**
 
 ---
 
-## 👥 Usuários de Teste
+## Usuários de Teste
 
 O script `criar_usuarios_teste.py` cria automaticamente os seguintes usuários para testar o sistema:
 
@@ -80,11 +80,11 @@ O script `criar_usuarios_teste.py` cria automaticamente os seguintes usuários p
 | **Personal Trainer** | `personal@athlos.com` | `personal123` |
 | **Aluno** | `aluno@athlos.com` | `aluno123` |
 
-> 💡 **Dica**: Use o Admin Sistema para acessar todas as funcionalidades administrativas.
+> **Dica**: Use o Admin Sistema para acessar todas as funcionalidades administrativas.
 
 ---
 
-## 🔗 Rotas do Sistema
+## Rotas do Sistema
 
 ### Frontend (Next.js)
 
@@ -167,7 +167,7 @@ O script `criar_usuarios_teste.py` cria automaticamente os seguintes usuários p
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 ### Backend
 
@@ -189,7 +189,7 @@ O script `criar_usuarios_teste.py` cria automaticamente os seguintes usuários p
 
 ---
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 projeto-pratico/
@@ -216,7 +216,7 @@ projeto-pratico/
 
 ---
 
-## 🔐 Sistema de Permissões
+## Sistema de Permissões
 
 | Perfil | Acessos |
 |--------|---------|
@@ -227,7 +227,7 @@ projeto-pratico/
 
 ---
 
-## 📝 Comandos Úteis
+## Comandos Úteis
 
 ```bash
 # Backend
@@ -246,13 +246,13 @@ npm run lint    # Verificar código
 
 ---
 
-## 📄 Licença
+## Licença
 
 Este projeto está sob a licença MIT.
 
 ---
 
-## 👨‍💻 Desenvolvedores
+## Desenvolvedores
 
 Desenvolvido por:
 
